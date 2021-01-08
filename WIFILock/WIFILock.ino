@@ -13,9 +13,13 @@ Servo myServo;
 int ledPin = 12;
 int servoPin = 8;
 
+bool isLock = false; //傳訊
+
 void setup() {
   pinMode(ledPin, OUTPUT);
   myServo.attach(servoPin);
+  myServo.write(0);
+  isLock = false; //傳訊
   Serial.begin(9600);
   Serial1.begin(9600);
   InitWiFi();
@@ -66,6 +70,14 @@ void execCmd(WiFiEspClient client)
       unlock();
       return;
     }
+    else if(cmd[index]=='Q') //傳訊
+    {
+      if(isLock)
+        client.println("L");
+      else
+        client.println("U");
+      return;
+    }
     else if(cmd[index]=='C')//馬達的部分
     {
       int v = getInt(cmd, index+1);
@@ -82,14 +94,16 @@ void lock()//鎖動作
 {
   myServo.write(90);
   delay(300);
- 
+  isLock = true; //傳訊
+  Serial.println("Close");
 }
 
 void unlock()//開鎖動作
 {
   myServo.write(0);
   delay(300);
- 
+  isLock = false; //傳訊
+  Serial.println("Open");
 }
 
 void turnOnLed(int ledpin)
