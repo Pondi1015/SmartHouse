@@ -56,14 +56,14 @@ void execCmd(WiFiEspClient client)
     index++;
   while(cmd[index]!=';')
   {
-    if(cmd[index]=='A')
+    if(cmd[index]=='A')//鎖參數A
     {
-      turnOnLed(13);
+      lock();
       return;
     }
-    else if(cmd[index]=='B')
+    else if(cmd[index]=='B')//開鎖參數B
     {
-      turnOffLed(13);
+      unlock();
       return;
     }
     else if(cmd[index]=='C')//馬達的部分
@@ -76,6 +76,20 @@ void execCmd(WiFiEspClient client)
     delay(10);
   }
   Serial.println("Job done");
+}
+
+void lock()//鎖動作
+{
+  myServo.write(90);
+  delay(300);
+ 
+}
+
+void unlock()//開鎖動作
+{
+  myServo.write(0);
+  delay(300);
+ 
 }
 
 void turnOnLed(int ledpin)
