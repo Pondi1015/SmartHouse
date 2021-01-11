@@ -12,11 +12,15 @@ Servo myServo;
 
 int ledPin = 12;
 int servoPin = 8;
+int doorPin = 7;
+
+
 
 bool isLock = false; //傳訊
 
 void setup() {
-  pinMode(ledPin, OUTPUT);
+  pinMode(ledPin,OUTPUT);
+  pinMode(doorPin,INPUT_PULLUP);
   myServo.attach(servoPin);
   myServo.write(0);
   isLock = false; //傳訊
@@ -26,8 +30,12 @@ void setup() {
 }
 
 void loop() {
+  //Serial.println("Listening...");
   WiFiEspClient client = server.available();  // listen for incoming clients
- 
+  //Serial.println("checking switch ...");
+  
+
+  
   if(client) {
     Serial.println("New client");
     buf.init();
@@ -42,6 +50,12 @@ void loop() {
           execCmd(client);
           index = 0;
         }
+      }
+      if (digitalRead(doorPin) == HIGH){
+        Serial.print("關");
+      }
+      else{
+        Serial.print("開");
       }
       delay(10);
     }
