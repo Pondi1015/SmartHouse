@@ -16,14 +16,14 @@ int doorPin = 7;
 
 
 
-bool isLock = false; //傳訊
+bool isDoor = false; //傳訊
 
 void setup() {
   pinMode(ledPin,OUTPUT);
   pinMode(doorPin,INPUT_PULLUP);
   myServo.attach(servoPin);
   myServo.write(0);
-  isLock = false; //傳訊
+  isDoor = false; //傳訊
   Serial.begin(9600);
   Serial1.begin(9600);
   InitWiFi();
@@ -76,17 +76,17 @@ void execCmd(WiFiEspClient client)
   {
     if(cmd[index]=='A')//鎖參數A
     {
-      lock();
+      Open();
       return;
     }
     else if(cmd[index]=='B')//開鎖參數B
     {
-      unlock();
+      Close();
       return;
     }
     else if(cmd[index]=='Q') //傳訊
     {
-      if(isLock)
+      if(isDoor)
         client.println("L");
       else
         client.println("U");
@@ -104,20 +104,20 @@ void execCmd(WiFiEspClient client)
   Serial.println("Job done");
 }
 
-void lock()//鎖動作
+void Open()//鎖動作
 {
-  myServo.write(90);
+  myServo.write(100);
   delay(300);
-  isLock = true; //傳訊
-  Serial.println("Close");
+  isDoor = true; //傳訊
+  //Serial.println("Close");
 }
 
-void unlock()//開鎖動作
+void Close()//開鎖動作
 {
   myServo.write(0);
   delay(300);
-  isLock = false; //傳訊
-  Serial.println("Open");
+  isDoor = false; //傳訊
+  //Serial.println("Open");
 }
 
 void turnOnLed(int ledpin)
