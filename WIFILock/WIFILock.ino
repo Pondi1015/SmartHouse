@@ -16,14 +16,14 @@ int doorPin = 7;
 
 
 
-bool isDoor = false; //傳訊
+bool isDoor = false; //門狀態
 
 void setup() {
   pinMode(ledPin,OUTPUT);
-  pinMode(doorPin,INPUT_PULLUP);
-  myServo.attach(servoPin);
-  myServo.write(0);
-  isDoor = false; //傳訊
+  pinMode(doorPin,INPUT);
+  myServo.attach(servoPin);//門開關
+  myServo.write(90);
+  isDoor = false; //門狀態
   Serial.begin(9600);
   Serial1.begin(9600);
   InitWiFi();
@@ -53,11 +53,15 @@ void loop() {
       }
       if (digitalRead(doorPin) == HIGH){
         Serial.print("關");
+        isDoor = true; //傳訊
+        client.println("L");
       }
       else{
         Serial.print("開");
+        isDoor = false; //傳訊
+        client.println("U");
       }
-      delay(10);
+      delay(1000);
     }
  
     // close the connection
@@ -74,14 +78,14 @@ void execCmd(WiFiEspClient client)
     index++;
   while(cmd[index]!=';')
   {
-    if(cmd[index]=='A')//鎖參數A
-    {
-      Open();
-      return;
-    }
-    else if(cmd[index]=='B')//開鎖參數B
+    if(cmd[index]=='A')//關參數A
     {
       Close();
+      return;
+    }
+    else if(cmd[index]=='B')//開參數B
+    {
+      Open();
       return;
     }
     else if(cmd[index]=='Q') //傳訊
@@ -108,7 +112,7 @@ void Open()//鎖動作
 {
   myServo.write(100);
   delay(300);
-  isDoor = true; //傳訊
+  
   //Serial.println("Close");
 }
 
@@ -116,7 +120,7 @@ void Close()//開鎖動作
 {
   myServo.write(0);
   delay(300);
-  isDoor = false; //傳訊
+  
   //Serial.println("Open");
 }
 
@@ -144,7 +148,7 @@ int getInt(char *cmd, int index)
 }
 
 
-
+//以下可以弄成.h檔
 void InitWiFi()
 {
   WiFi.init(&Serial1);
